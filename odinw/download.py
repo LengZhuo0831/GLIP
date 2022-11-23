@@ -3,7 +3,7 @@ import os
 
 argparser = argparse.ArgumentParser()
 argparser.add_argument("--dataset_names", default="all", type=str) # "all" or names joined by comma
-argparser.add_argument("--dataset_path", default="DATASET/odinw", type=str)
+argparser.add_argument("--dataset_path", default="/root/share/lengz/Project11/det_datasets/odinw", type=str)
 args = argparser.parse_args()
 
 root = "https://vlpdatasets.blob.core.windows.net/odinw/odinw/odinw_35"
@@ -16,11 +16,17 @@ if args.dataset_names == "all":
 else:
     datasets_to_download = args.dataset_names.split(",")
 
+print(len(all_datasets))
+for d in all_datasets:
+    print("wget " + root + "/" + d + ".zip")
+datasets_to_download=[]
+
 for dataset in datasets_to_download:
     if dataset in all_datasets:
         print("Downloading dataset: ", dataset)
         os.system("wget " + root + "/" + dataset + ".zip" + " -O " + args.dataset_path + "/" + dataset + ".zip")
         os.system("unzip " + args.dataset_path + "/" + dataset + ".zip -d " + args.dataset_path)
         os.system("rm " + args.dataset_path + "/" + dataset + ".zip")
+        
     else:
         print("Dataset not found: ", dataset)

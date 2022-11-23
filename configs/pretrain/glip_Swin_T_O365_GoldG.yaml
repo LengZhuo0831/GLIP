@@ -57,7 +57,8 @@ TEST:
 # use for grounding model
 DATASETS:
   TRAIN: ("object365_dt_train", "mixed_train_no_coco", "flickr30k_train", )
-  TEST: ("coco_2017_val", )
+  # TEST: ("coco_2017_val", )
+  TEST: ("coco_2017_train", )
   DISABLE_SHUFFLE: False
   ADD_DET_PROMPT: False
   RANDOM_SAMPLE_NEG: 85
