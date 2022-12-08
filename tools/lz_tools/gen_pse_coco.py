@@ -9,13 +9,13 @@ from tqdm import tqdm
 import numpy as np
 
 def main(mode='val',min_score=0.5,nms_iou_thl=0.5):
-    bbox_json_path = f'/root/share/lengz/Project11/GLIP/output/eval/glip_tiny_model_o365_goldg/inference/coco_2017_{mode}/bbox.json'
-    prediction_path = f'/root/share/lengz/Project11/GLIP/output/eval/glip_tiny_model_o365_goldg/inference/coco_2017_{mode}/predictions.pth'
+    bbox_json_path = f'/root/workspace/Project/GLIP/output/eval/glip_tiny_model_o365_goldg/inference/coco_2017_{mode}/bbox.json'
+    prediction_path = f'/root/workspace/Project/GLIP/output/eval/glip_tiny_model_o365_goldg/inference/coco_2017_{mode}/predictions.pth'
     
     bbox_json = json.load(open(bbox_json_path,'r'))                 # 388679个预测框，每张图1-100个，xywh格式，恢复到了原图尺寸
     prediction = torch.load(prediction_path,map_location='cpu')     # 5000张图的每个图的预测bboxlist，xyxy格式，resize之后的尺寸
     
-    coco = json.load(open(f'/root/share/lengz/Project11/det_datasets/coco/annotations/instances_{mode}2017.json','r'))
+    coco = json.load(open(f'/root/workspace/det_datasets/coco/annotations/instances_{mode}2017.json','r'))
     
     out_json = dict(info=coco['info'],licenses=coco['licenses'],images=coco['images'],annotations=[],categories=coco['categories'])
     '''
@@ -57,7 +57,7 @@ def main(mode='val',min_score=0.5,nms_iou_thl=0.5):
             ann = dict(segmentation=bbox,area=area,iscrowd=0,image_id=image_id,bbox=bbox,category_id=category_id,id=id)
             out_json['annotations'].append(ann)
         
-    json.dump(out_json,open(f"/root/share/lengz/Project11/det_datasets/coco/pse_annotations/pse_{mode}2017_{min_score}_{nms_iou_thl}.json",'w'))
+    json.dump(out_json,open(f"/root/workspace/det_datasets/coco/pse_annotations/pse_{mode}2017_{min_score}_{nms_iou_thl}.json",'w'))
     print("ok!")
     
     
@@ -65,14 +65,29 @@ def main(mode='val',min_score=0.5,nms_iou_thl=0.5):
 
 
 # main(mode='train')
-main(mode='train',min_score=0.9,nms_iou_thl=0.5)
+# main(mode='train',min_score=0.9,nms_iou_thl=0.5)
+# main(mode='train',min_score=0.6,nms_iou_thl=0.5)
+# main(mode='train',min_score=0.7,nms_iou_thl=0.5)
+# main(mode='train',min_score=0.8,nms_iou_thl=0.5)
+# main(mode='train',min_score=0.4,nms_iou_thl=0.5)
+# main(mode='train',min_score=0.3,nms_iou_thl=0.5)
+# main(mode='train',min_score=0.2,nms_iou_thl=0.5)
+# main(mode='train',min_score=0.1,nms_iou_thl=0.5)
+# main(mode='train',min_score=0.05,nms_iou_thl=0.5)
+# main(mode='train',min_score=0.01,nms_iou_thl=0.5)
+# main(mode='train',min_score=0.05,nms_iou_thl=0.9)
+# main(mode='train',min_score=0.05,nms_iou_thl=0.7)
+# main(mode='train',min_score=0.05,nms_iou_thl=0.3)
+main(mode='train',min_score=0.05,nms_iou_thl=0.4)
+main(mode='train',min_score=0.05,nms_iou_thl=0.2)
+main(mode='train',min_score=0.05,nms_iou_thl=0.1)
+
+
 
 # 通过之前的实验我们知道，伪标的质量是有讲究的，可以少一些质量太差的伪标，我们可以统计一下score和他们与gt的iou大小的分布情况，
-
 from pycocotools.coco import COCO
 # from maskrcnn_benchmark.structures.boxlist_ops import boxlist_iou
 import matplotlib.pyplot as plt
-
 
 def box_area(boxes: np.array) -> np.array:
     assert boxes.ndim == 2 and boxes.shape[-1] == 4
@@ -94,19 +109,19 @@ def box_iou(boxes1: np.array, boxes2: np.array) -> np.array:
     return iou
 
 def scoreVsIou(mode='val',min_score=0.5,nms_iou_thl=0.5):
-    bbox_json_path = f'/root/share/lengz/Project11/GLIP/output/eval/glip_tiny_model_o365_goldg/inference/coco_2017_{mode}/bbox.json'
-    prediction_path = f'/root/share/lengz/Project11/GLIP/output/eval/glip_tiny_model_o365_goldg/inference/coco_2017_{mode}/predictions.pth'
+    bbox_json_path = f'/root/workspace/Project/GLIP/output/eval/glip_tiny_model_o365_goldg/inference/coco_2017_{mode}/bbox.json'
+    prediction_path = f'/root/workspace/Project/GLIP/output/eval/glip_tiny_model_o365_goldg/inference/coco_2017_{mode}/predictions.pth'
     
     bbox_json = json.load(open(bbox_json_path,'r'))                 # 388679个预测框，每张图1-100个，xywh格式，恢复到了原图尺寸
     prediction = torch.load(prediction_path,map_location='cpu')     # 5000张图的每个图的预测bboxlist，xyxy格式，resize之后的尺寸
     
-    # coco = json.load(open(f'/root/share/lengz/Project11/det_datasets/coco/annotations/instances_{mode}2017.json','r'))
-    coco = COCO(annotation_file=f'/root/share/lengz/Project11/det_datasets/coco/annotations/instances_{mode}2017.json')
+    # coco = json.load(open(f'/root/workspace/det_datasets/coco/annotations/instances_{mode}2017.json','r'))
+    coco = COCO(annotation_file=f'/root/workspace/det_datasets/coco/annotations/instances_{mode}2017.json')
     # out_json = dict(info=coco['info'],licenses=coco['licenses'],images=coco['images'],annotations=[],categories=coco['categories'])
 
     p = 0       # bbox_json当前指针
-    All_ious = []
-    All_scores = []
+    keep_ious = []
+    keep_scores = []
     for i in tqdm(range(len(prediction))):
         ann = dict()
         bboxes_list = []
@@ -146,13 +161,13 @@ def scoreVsIou(mode='val',min_score=0.5,nms_iou_thl=0.5):
             max_iou, _ = torch.max(ious,dim=-1)
         else:
             max_iou = torch.zeros_like(scores_tensor)
-        All_ious.extend(max_iou.tolist())
-        All_scores.extend(scores_tensor.tolist())
+        keep_ious.extend(max_iou.tolist())
+        keep_scores.extend(scores_tensor.tolist())
         
-    corr = np.corrcoef(np.array(All_ious),np.array(All_scores))
+    corr = np.corrcoef(np.array(keep_ious),np.array(keep_scores))
     print(corr[0,1])
-    # plt.scatter(All_ious,All_scores,s=1)
-    # plt.savefig("/root/share/lengz/Project11/GLIP/tools/lz_tools/iou_score.png")
+    # plt.scatter(keep_ious,All_scores,s=1)
+    # plt.savefig("/root/workspace/Project/GLIP/tools/lz_tools/iou_score.png")
     
     
     
